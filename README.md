@@ -49,7 +49,7 @@ This is a **playable prototype starter**, not a production-ready commercial batt
 - **Esc:** release pointer
 
 ## Environment variables
-- `NEXT_PUBLIC_GAME_SERVER_URL`: deployed Worker WebSocket URL, e.g. `wss://island-arena-realtime.<your-subdomain>.workers.dev`.
+- `NEXT_PUBLIC_GAME_SERVER_URL`: deployed Worker WebSocket URL. The current Worker is `wss://island-arena-realtime.island-arena-mrrehan8779255248.workers.dev`; local development uses `ws://localhost:8787`.
 - `MONGODB_URI`: MongoDB URI for the dedicated `islandarena` application database user.
 - `MONGODB_DB`: optional database name (defaults to `islandarena`).
 - `MATCH_INGEST_SECRET`: optional secret for protected ingestion routes; generate and store only in the host settings.
