@@ -1,0 +1,11 @@
+node_modules
+.next
+out
+dist
+.env
+.env.*
+!.env.example
+cloudflare/node_modules
+.vercel
+.DS_Store
+npm-debug.log*
