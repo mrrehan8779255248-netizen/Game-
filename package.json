@@ -1,0 +1,26 @@
+{
+  "name": "island-arena",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Original browser-based 3D multiplayer battle royale prototype",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "worker:dev": "npm --prefix cloudflare run dev",
+    "worker:deploy": "npm --prefix cloudflare run deploy",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "mongodb": "^6.19.0",
+    "next": "^15.4.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "three": "^0.179.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.30",
+    "@types/react": "^19.1.8",
+    "typescript": "^5.8.3"
+  }
+}
