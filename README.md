@@ -24,6 +24,15 @@ This is a **playable prototype starter**, not a production-ready commercial batt
 - A Cloudflare account with Workers and Durable Objects enabled for online play.
 - Vercel linked to the GitHub repository.
 
+## Live deployment
+
+- Web app: https://island-arena.vercel.app
+- Realtime Worker health: https://island-arena-realtime.island-arena-mrrehan8779255248.workers.dev/health
+- App health endpoint: https://island-arena.vercel.app/api/health
+- Leaderboard API: https://island-arena.vercel.app/api/leaderboard
+
+The current Vercel deployment was uploaded directly and reached READY. The Vercel GitHub integration is not connected yet, so pushes to `main` will not automatically redeploy until that integration is installed and linked.
+
 ## Run locally
 1. Copy `.env.example` to `.env.local` and set values you have.
 2. From the repository root:
