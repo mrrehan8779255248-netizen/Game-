@@ -210,7 +210,13 @@ export default function Arena() {
         try { data = JSON.parse(event.data); } catch { return; }
         const a = actionsRef.current;
         if (data.type === "welcome") {
+          selfIdRef.current = data.id;
           a.setSelfId(data.id);
+          if (data.player && gameRef.current?.localPosition &&
+              Number.isFinite(data.player.x) && Number.isFinite(data.player.z)) {
+            gameRef.current.localPosition.x = data.player.x;
+            gameRef.current.localPosition.z = data.player.z;
+          }
           if (data.player) {
             a.setHp(data.player.hp || 100);
             a.setInventory(data.player.inventory || []);
