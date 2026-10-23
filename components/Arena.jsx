@@ -155,6 +155,8 @@ export default function Arena() {
   const gameRef = useRef(null);
   const socketRef = useRef(null);
   const actionsRef = useRef({});
+  const selfIdRef = useRef("");
+  const selectedRef = useRef(0);
   const [connection, setConnection] = useState("connecting");
   const [room, setRoom] = useState("public");
   const [name, setName] = useState("Ranger-" + shortId());
@@ -187,6 +189,9 @@ export default function Arena() {
     logEvent,
     getName: () => name
   };
+  selfIdRef.current = selfId;
+  selectedRef.current = selected;
+  actionsRef.current.selfId = selfId;
 
   function joinRoom() {
     if (socketRef.current && socketRef.current.readyState <= WebSocket.OPEN) return;
@@ -306,7 +311,9 @@ export default function Arena() {
       raycaster.set(camera.position, forward);
       const hits = raycaster.intersectObjects(playerTargetMeshes, true);
       const victim = hits.find((hit) => hit.object.userData.playerId && hit.object.userData.playerId !== actionsRef.current.selfId);
-      actionsRef.current.send?.({ type: "shoot", targetId: victim?.object.userData.playerId || null });
+      const selectedItem = (gameRef.current?.inventory || [])[selectedRef.current];
+      if (selectedItem?.kind === "medkit") actionsRef.current.send?.({ type: "use", itemId: selectedItem.id });
+      else actionsRef.current.send?.({ type: "shoot", targetId: victim?.object.userData.playerId || null, weaponIndex: selectedRef.current });
     };
 
     const onMouseMove = (event) => {
@@ -329,7 +336,7 @@ export default function Arena() {
       }
       if (event.code === "KeyG") {
         const inv = gameRef.current?.inventory || [];
-        const item = inv[Math.min(selected, Math.max(0, inv.length - 1))];
+        const item = inv[Math.min(selectedRef.current, Math.max(0, inv.length - 1))];
         if (item) actionsRef.current.send?.({ type: "drop", itemId: item.id });
       }
       if (event.code === "KeyR") actionsRef.current.send?.({ type: "reload" });
@@ -370,7 +377,7 @@ export default function Arena() {
             if (node.isMesh && node.userData.hitPart) {
               node.userData.playerId = player.id;
               node.material = node.material.clone();
-              if (player.id === actionsRef.current.selfId) node.material.emissive = new THREE.Color(0x244444);
+              if (player.id === selfIdRef.current) node.material.emissive = new THREE.Color(0x244444);
               playerTargetMeshes.push(node);
             }
           });
@@ -381,10 +388,10 @@ export default function Arena() {
             if (node.isMesh && node.userData.hitPart) playerTargetMeshes.push(node);
           });
         }
-        const x = player.id === actionsRef.current.selfId ? localPosition.x : player.x;
-        const z = player.id === actionsRef.current.selfId ? localPosition.z : player.z;
-        group.position.lerp(new THREE.Vector3(x, player.alive ? 0 : -8, z), player.id === actionsRef.current.selfId ? 1 : 0.36);
-        group.rotation.y = player.id === actionsRef.current.selfId ? yaw : (player.yaw || 0);
+        const x = player.id === selfIdRef.current ? localPosition.x : player.x;
+        const z = player.id === selfIdRef.current ? localPosition.z : player.z;
+        group.position.lerp(new THREE.Vector3(x, player.alive ? 0 : -8, z), player.id === selfIdRef.current ? 1 : 0.36);
+        group.rotation.y = player.id === selfIdRef.current ? yaw : (player.yaw || 0);
         group.visible = player.alive !== false;
         group.traverse((node) => {
           if (node.isMesh && node.userData.hitPart) node.userData.playerId = player.id;
@@ -429,7 +436,7 @@ export default function Arena() {
         localPosition.z + Math.cos(yaw) * cameraDistance * Math.cos(pitch)
       );
       camera.lookAt(target);
-      if (now - lastSent > 65 && socketRef.current?.readyState === WebSocket.OPEN && selfId) {
+      if (now - lastSent > 65 && socketRef.current?.readyState === WebSocket.OPEN && selfIdRef.current) {
         actionsRef.current.send?.({ type: "move", x: localPosition.x, z: localPosition.z, yaw, sprint: speed > 10 });
         lastSent = now;
       }
@@ -458,7 +465,7 @@ export default function Arena() {
       });
       gameRef.current = null;
     };
-  }, [selected, selfId]);
+  }, []);
 
   useEffect(() => {
     if (gameRef.current) {
